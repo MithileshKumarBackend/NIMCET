@@ -1,9 +1,15 @@
 import { Router } from 'express';
 import authRoutes from './auth.routes.js';
+import catalogRoutes from './catalog.routes.js';
+import questionRoutes from './question.routes.js';
 import uploadRoutes from './upload.routes.js';
+import testRoutes from './test.routes.js';
 import { health } from '../controllers/health.controller.js';
 const router = Router();
 router.get('/health', health);
 router.use('/auth', authRoutes);
+router.use('/catalog', catalogRoutes);
+router.use('/questions', questionRoutes);
+router.use('/tests', testRoutes);
 router.use('/uploads', uploadRoutes);
 export default router;
