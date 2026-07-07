@@ -1,0 +1,16 @@
+import { Router } from 'express';
+import * as controller from '../controllers/auth.controller.js';
+import { authenticate } from '../middlewares/auth.middleware.js';
+import { validate } from '../middlewares/validate.middleware.js';
+import { emailRules, loginRules, registerRules, resetRules, verifyEmailRules } from '../validators/auth.validator.js';
+const router = Router();
+router.post('/register', registerRules, validate, controller.register);
+router.post('/login', loginRules, validate, controller.login);
+router.post('/refresh', controller.refresh);
+router.post('/verify-email', verifyEmailRules, validate, controller.verifyEmail);
+router.post('/forgot-password', emailRules, validate, controller.forgotPassword);
+router.post('/reset-password', resetRules, validate, controller.resetPassword);
+router.post('/logout', controller.logout);
+router.post('/logout-all', authenticate, controller.logoutAll);
+router.get('/me', authenticate, controller.me);
+export default router;

@@ -1,0 +1,2 @@
+import { User } from '../models/user.model.js';
+export const userRepository = { create: (data) => User.create(data), findByEmailWithPassword: (email) => User.findOne({ email: email.toLowerCase(), deletedAt: null }).select('+passwordHash'), findByEmail: (email) => User.findOne({ email: email.toLowerCase(), deletedAt: null }), findById: (id) => User.findOne({ _id: id, deletedAt: null }), updateById: (id, data) => User.findByIdAndUpdate(id, data, { new: true }) };
