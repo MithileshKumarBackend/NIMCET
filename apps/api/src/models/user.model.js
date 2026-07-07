@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
   googleId: { type: String, sparse: true, index: true },
   isEmailVerified: { type: Boolean, default: false, index: true },
   isActive: { type: Boolean, default: true, index: true },
+  tokenVersion: { type: Number, default: 0, select: false },
   deletedAt: { type: Date, default: null, index: true },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

@@ -1,5 +1,39 @@
 import { AppError } from '../utils/AppError.js';
 import { verifyAccess } from '../utils/tokens.js';
 import { userRepository } from '../repositories/user.repository.js';
-export async function authenticate(req, res, next) { try { const header = req.get('authorization') || ''; const token = header.startsWith('Bearer ') ? header.slice(7) : null; if (!token) throw new AppError('Authentication required', 401, 'AUTH_REQUIRED'); const payload = verifyAccess(token); const user = await userRepository.findById(payload.sub); if (!user || !user.isActive) throw new AppError('Authentication required', 401, 'AUTH_REQUIRED'); req.user = user; next(); } catch (err) { next(err.statusCode ? err : new AppError('Invalid access token', 401, 'INVALID_ACCESS_TOKEN')); } }
-export const authorize = (...roles) => (req, res, next) => { if (!req.user) return next(new AppError('Authentication required', 401, 'AUTH_REQUIRED')); if (!roles.includes(req.user.role)) return next(new AppError('Forbidden', 403, 'FORBIDDEN')); next(); };
+
+export async function authenticate(req, res, next) {
+  try {
+    const header = req.get('authorization') || '';
+    const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+
+    if (!token) {
+      throw new AppError('Authentication required', 401, 'AUTH_REQUIRED');
+    }
+
+    const payload = verifyAccess(token);
+    const user = await userRepository.findById(payload.sub);
+
+    if (!user || !user.isActive) {
+      throw new AppError('Authentication required', 401, 'AUTH_REQUIRED');
+    }
+
+    req.user = user;
+    req.auth = { userId: user.id, role: user.role };
+    next();
+  } catch (err) {
+    next(err.statusCode ? err : new AppError('Invalid access token', 401, 'INVALID_ACCESS_TOKEN'));
+  }
+}
+
+export const authorize = (...roles) => (req, res, next) => {
+  if (!req.user) {
+    return next(new AppError('Authentication required', 401, 'AUTH_REQUIRED'));
+  }
+
+  if (!roles.includes(req.user.role)) {
+    return next(new AppError('Forbidden', 403, 'FORBIDDEN'));
+  }
+
+  return next();
+};
